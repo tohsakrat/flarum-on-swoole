@@ -244,7 +244,7 @@ $server->on('workerStart', function (Server $server, int $workerId) {
     // ----------------------------------------------------------
     // 定时 Worker 轮换（解决堆碎片化慢性退化）
     // ----------------------------------------------------------
-    $recycleInterval = 0.2 * 3600 * 1000;  // 6 小时
+    $recycleInterval = 1 * 3600 * 1000;  // 1 小时
     $recycleOffset   = $workerId * 45 * 1000;  // 错开 45 秒
     \Swoole\Timer::after($recycleOffset, function () use ($server, $workerId, $recycleInterval) {
         \Swoole\Timer::tick($recycleInterval, function () use ($server, $workerId) {
