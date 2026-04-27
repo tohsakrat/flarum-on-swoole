@@ -12,7 +12,7 @@ php flarum-swoole.php start
 
 ~~各种连接保活没测试过，我的探针五秒就会请求一次，无保活环境可能会死~~
 
-lsphp和swoole互斥，不为了lsphp的性能提升，没必要专门为了缓存把网关换成litespeed，毕竟open litespeed网关真的难用。
+lsphp和swoole互斥，不为了lsphp的性能提升，没必要专门为了缓存把网关换成litespeed，毕竟免费版open litespeed网关限制是真多。
 
 提升其实不算很大，单次请求也就快一百毫秒左右，没开启Hook所以其实对并发的提升不大，主要是为了加热容器。
 
