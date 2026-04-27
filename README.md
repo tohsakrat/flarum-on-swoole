@@ -3,5 +3,6 @@
 ```
 php flarum-swoole.php start
 ```
-如果有fof/redis和litespeed cache插件，本身可以代替litespeed的功能（litespeed捆绑lsphp和swoole互斥，不为了lsphp的性能提升没必要专门为了缓存把网关换成litespeed，毕竟那玩意真的难用）
-觉得flarum本身很轻后端跑一两秒也没关系的懂哥别用哈
+如果有fof/redis和litespeed cache插件，本身可以代替litespeed。
+litespeed捆绑lsphp和swoole互斥，不为了lsphp的性能提升没必要专门为了缓存把网关换成litespeed，毕竟litespeed网关真的难用。
+觉得flarum本身很轻后端跑一两秒也没关系的懂哥别用哈，两年前就有人搞出来了人家没分享也是被你们喷走的。
