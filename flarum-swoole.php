@@ -277,12 +277,12 @@ $server->on('workerStart', function (Server $server, int $workerId) {
     // 背景：PHP 的 Zend 内存分配器在 GC 回收对象后，被释放的内存只是
     // 原地留下"空洞"，无法被压缩整理。Worker 运行 6~8 小时后，堆里
     // 布满细碎空洞，CPU 寻址的 L1/L2 Cache 命中率持续下滑，
-    // 解决方案：每个 Worker 每 0.2 小时（各自错开启动时间）主动退出一次。
+    // 解决方案：每个 Worker 每 1小时（各自错开启动时间）主动退出一次。
     // Swoole Manager 会在毫秒内拉起全新干净的替补 Worker，
     // 整个过程对用户完全透明（在线用户的请求会被其他 Worker 接管）。
     // 各 Worker 错开时间：避免 8 个 Worker 同时重启导致的短暂容量下降。
     // ----------------------------------------------------------
-    $recycleInterval = 0.2 * 3600 * 1000;  // 6 小时
+    $recycleInterval = 1 * 3600 * 1000; 
     $recycleOffset   = $workerId * 45 * 1000;  // 每个 Worker 错开 45 秒
     \Swoole\Timer::after($recycleOffset, function () use ($server, $workerId, $recycleInterval) {
         \Swoole\Timer::tick($recycleInterval, function () use ($server, $workerId) {
