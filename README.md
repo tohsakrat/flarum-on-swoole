@@ -2,7 +2,7 @@
 ```
 pecl install swoole
 ```
-flarum1.x运行环境~~历史悠久~~我也没在别的版本测试过，自用php8.5+swoole6.2。
+flarum1.x运行环境~~历史悠久~~，运行环境多种多样，我也没在别的版本测试过，自用php8.5+swoole6.2。
 
 把非侵入式入口文件flarum-swoole.php放在flarum根目录（和vendor文件夹平级）
 启动
@@ -10,7 +10,31 @@ flarum1.x运行环境~~历史悠久~~我也没在别的版本测试过，自用p
 php flarum-swoole.php start
 ```
 
-如果成功，swoole会运行在2345端口，在nginx等网关配置反代即可。
+如果成功，swoole会运行在并监听/tmp/flarum.sock，可以根据需要改成端口通信，在nginx等网关配置反代即可。
+推荐supervisor环境运行，启动脚本教考：
+```
+#!/bin/bash
+
+# 1. 无差别强杀残留进程和 Socket 占用
+pkill -9 -f 'flarum-swoole.php' 2>/dev/null
+fuser -k -9 /tmp/flarum.sock 2>/dev/null
+
+# 2. 超时检测循环 (最多等 5 秒)
+for i in 1 2 3 4 5; do
+    # 如果查不到 socket 占用，立刻跳出循环
+    if ! ss -xln | grep -Fq '/tmp/flarum.sock'; then
+        break
+    fi
+    sleep 1
+done
+
+# 3.清理残留文件
+rm -f /tmp/flarum.sock /tmp/flarum-swoole.pid
+
+# 4. 切换用户并执行最终启动
+exec su -c 'cd /www/wwwroot/klezik-insi.de/flarum && php flarum-swoole.php start'
+```
+
 
 如果有fof/redis和litespeed cache插件，这个脚本可以读取redis设置，代替litespeed网关做缓存。
 
