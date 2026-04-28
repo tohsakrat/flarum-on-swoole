@@ -5,13 +5,17 @@ pecl install swoole
 flarum1.x运行环境~~历史悠久~~，运行环境多种多样，我也没在别的版本测试过，自用php8.5+swoole6.2。
 
 把非侵入式入口文件flarum-swoole.php放在flarum根目录（和vendor文件夹平级）
+
 启动
+
 ```
 php flarum-swoole.php start
 ```
 
 如果成功，swoole会运行在并监听/tmp/flarum.sock，可以根据需要改成端口通信，在nginx等网关配置反代即可。
+
 推荐supervisor环境运行，启动脚本教考：
+
 ```
 #!/bin/bash
 
@@ -36,7 +40,7 @@ exec su -c 'cd /www/wwwroot/klezik-insi.de/flarum && php flarum-swoole.php start
 ```
 
 
-如果有fof/redis和litespeed cache插件，这个脚本可以读取redis设置，代替litespeed网关做缓存。
+如果有fof/redis和litespeed cache插件，这个脚本可以读取redis设置，代替litespeed网关做缓存。~~不过还没做~~
 
 比真正的litespeed好一点是可以在入口就去redis拿session，做颗粒度更细的缓存策略。
 
