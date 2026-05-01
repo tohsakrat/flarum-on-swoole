@@ -1,10 +1,14 @@
-安装swoole
+flarum1.x运行环境~~历史悠久~~，运行环境多种多样，我也没在别的版本测试过，自用php8.5+swoole6.2。
+如果用开启协程版本，要1.8以上，Tobscure\JsonApi已经内置于flarum/core成本的、
+
+
+# 使用步骤
+
+1. 安装swoole
 ```
 pecl install swoole
 ```
-flarum1.x运行环境~~历史悠久~~，运行环境多种多样，我也没在别的版本测试过，自用php8.5+swoole6.2。
-
-把非侵入式入口文件flarum-swoole.php放在flarum根目录（和vendor文件夹平级）
+2. 把非侵入式入口文件flarum-swoole.php或者flarum-swoole.php放在flarum根目录（和vendor文件夹平级）
 
 启动
 
@@ -43,16 +47,15 @@ exec su -c 'cd /xxx/flarum && php flarum-swoole.php start'
 如果有fof/redis和litespeed cache插件，这个脚本可以读取redis设置，代替litespeed网关做缓存。
 
 比真正的litespeed好一点是可以在入口就去redis拿session，做颗粒度更细的缓存策略。~~不过还没做~~
-
 ~~没在没装fof/redis的环境下测试过，不能跑别来找我。~~
 
-~~各种连接保活没测试过，我的探针五秒就会请求一次，无保活环境可能会死~~
 
 lsphp和swoole互斥，不为了lsphp的性能提升，没必要专门为了缓存把网关换成litespeed，毕竟免费版open litespeed网关限制是真多。
 
 提升其实不算很大，单次请求也就快一百毫秒左右，没开启Hook所以其实对并发的提升也不大，swoole的主要作用是加热容器。
 
 提升较大的使用的场景是，降低每次请求的数据量，比如调低每一页的贴数，拆分原本重型的请求，让用户不用等容器启动的时间，直接拿到刚组装出来的几个帖子内容,或者让几个小请求并行。
+协程版本重写了Serializer依赖的api，并发执行序列化，不过协程版本不太稳定，得研究下。
 
 因为swoole节省了容器启动的部分时间，小型请求的初始水位降低，用户就能得到几乎及时的反馈。
 
