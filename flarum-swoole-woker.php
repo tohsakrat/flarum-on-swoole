@@ -104,7 +104,8 @@ $server->set([
     'worker_num'            => $workerCount,
     'open_cpu_affinity' => true, // 开启 CPU 亲和性设置
     'task_worker_num'       => 0,
-    'max_request'           => 0,
+    'max_request'           => 1000,
+    'max_request_grace'     => 100, // （可选参数，防止所有 worker 同时重启，给一个波动的冗余量）
     'reload_async'          => true,
     'max_wait_time'         => 60,
     'enable_reuse_port'     => false,
@@ -542,7 +543,7 @@ $server->on('request', function (SwooleRequest $swooleReq, SwooleResponse $swool
     // ----------------------------------------------------------
     // [健康检查] 内存水位监控 
     // ----------------------------------------------------------
-    if (memory_get_usage() > 256 * 1024 * 1024) {
+    if (memory_get_usage() > 128 * 1024 * 1024) {
         echo "[Worker #{$GLOBALS['flarum_worker_id']}] 内存超过 128MB，触发平滑重启...\n";
         if ($server instanceof \Swoole\Server) {
            // \Swoole\Coroutine\System::sleep(0.1);
