@@ -25,7 +25,7 @@ pecl install swoole
 php flarum-swoole-woker.php start
 ```
 
-- 如果成功，swoole会运行在并监听/tmp/flarum.sock，可以根据需要改成端口通信，在nginx等网关配置反代即可。
+- 如果成功，swoole会运行在并监听/tmp/flarum.sock(可以根据需要改成端口通信)，然后在nginx等网关配置反代即可。
 
 - 推荐supervisor环境运行，启动脚本教考：
 
