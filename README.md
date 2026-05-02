@@ -33,7 +33,8 @@ php flarum-swoole-woker.php start
 #!/bin/bash
 
 # 1. 无差别强杀残留进程和 Socket 占用
-pkill -9 -f 'flarum-swoole.php' 2>/dev/null
+pkill -9 -f 'flarum-swoole-co.php' 2>/dev/null
+pkill -9 -f 'flarum-swoole-woker.php' 2>/dev/null
 fuser -k -9 /tmp/flarum.sock 2>/dev/null
 
 # 2. 超时检测循环 (最多等 5 秒)
