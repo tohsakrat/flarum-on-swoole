@@ -21,6 +21,16 @@ declare(strict_types=1);
 // ============================================================
 // 启动检查
 // ============================================================
+/** 
+ * 日志级别：
+ * 'info'  - 只打印启停信息和访问日志
+ * 'debug' - 这个模式目前没有
+ */
+const LOG_LEVEL = 'info';
+
+/** LSCache 功能开关（true = 启用游客缓存加速，false = 禁用） */
+const LSCACHE_ENABLED = true;
+
 if (!extension_loaded('swoole')) {
     fwrite(STDERR, "[ERROR] Swoole 扩展未安装。请执行: pecl install swoole\n");
     exit(1);
@@ -292,7 +302,7 @@ $server->on('workerStart', function (Server $server, int $workerId) {
     // ----------------------------------------------------------
     // 定时 Worker 轮换（解决堆碎片化慢性退化）
     // ----------------------------------------------------------
-    $recycleInterval = (int)(0.5 * 3600 * 1000);  // 6 小时
+    $recycleInterval = (int)(0.5 * 3600 * 1000);  // 0.5 小时
     $recycleOffset   = $workerId * 180 * 1000;  // 错开 180 秒
     \Swoole\Timer::after($recycleOffset, function () use ($server, $workerId, $recycleInterval) {
         \Swoole\Timer::tick($recycleInterval, function () use ($server, $workerId) {
@@ -326,18 +336,36 @@ $server->on('request', function (SwooleRequest $swooleReq, SwooleResponse $swool
         $sessionId = $swooleReq->cookie['flarum_session'];
         $redis = $GLOBALS['swoole_session_redis'];
         
-        $sessionData = $redis->get($sessionId) 
-                    ?: $redis->get('flarum_cache:' . $sessionId) 
-                    ?: $redis->get('flarum_session:' . $sessionId)
-                    ?: $redis->get('flarum_cache_' . $sessionId)
-                    ?: $redis->get('flarum_session_' . $sessionId);
+        // fof/redis 使用 CacheBasedSessionHandler， key 就是裸 session ID（无前缀）
+        $sessionData = $redis->get($sessionId);
         
-        if ($sessionData && !str_starts_with($sessionData, 's:118:"a:2:{s:6:"_token"')) {
-            $isGuest = false;
+        if ($sessionData) {
+            // 外层是 serialize(string)，内层是 serialize(array)
+            $inner = @unserialize($sessionData);
+            $parsed = is_string($inner) ? @unserialize($inner) : $inner;
+            
+            // Flarum 登录时会把 access_token 写入 session；游客只有 _token (CSRF)
+            $accessToken = is_array($parsed) ? ($parsed['access_token'] ?? null) : null;
+            if ($accessToken) {
+                try {
+                    $db = $GLOBALS['flarum_container']->make('db')->connection();
+                    $tokenRow = $db->table('access_tokens')->where('token', $accessToken)->first();
+                    if ($tokenRow && !empty($tokenRow->user_id)) {
+                        $isGuest = false;
+                    }
+                } catch (\Throwable $e) {
+                    $isGuest = false;
+                    error_log('[Worker] Session DB Check Error: ' . $e->getMessage());
+                }
+            } elseif (is_array($parsed) && isset($parsed['_token'])) {
+                // 游客的纯 CSRF session，$isGuest 保持 true
+            } else {
+                $isGuest = false; // 无法解析，保守
+            }
         }
     }
 
-    if ($isGuest && in_array($method, ['GET', 'HEAD']) && isset($GLOBALS['swoole_redis'])) {
+    if (LSCACHE_ENABLED && $isGuest && in_array($method, ['GET', 'HEAD']) && isset($GLOBALS['swoole_redis'])) {
         try {
             $redis = $GLOBALS['swoole_redis'];
             $cacheKey = buildLSCacheKey($swooleReq);
@@ -428,7 +456,7 @@ $server->on('request', function (SwooleRequest $swooleReq, SwooleResponse $swool
     // ----------------------------------------------------------
     // LSCache 兼容层：响应分析与缓存操作
     // ----------------------------------------------------------
-    if (isset($GLOBALS['swoole_redis'])) {
+    if (LSCACHE_ENABLED && isset($GLOBALS['swoole_redis'])) {
         try {
             /** @var \Predis\Client $redis */
             $redis = $GLOBALS['swoole_redis'];
