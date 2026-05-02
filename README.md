@@ -197,12 +197,12 @@ return [
 <img width="1231" height="210" alt="image" src="https://github.com/user-attachments/assets/7b82c3e6-3b71-4695-ba1b-fe9f5feec240" />
 
 ### co模式
-<img width="3731" height="392" alt="image" src="https://github.com/user-attachments/assets/15594e4c-9ed5-4934-8c64-be38a3aa2f70" />
-<img width="3816" height="480" alt="image" src="https://github.com/user-attachments/assets/27cfad1a-533a-4430-b690-b0c95450621f" />
+<img width="2309" height="278" alt="image" src="https://github.com/user-attachments/assets/62e951a7-a70b-4650-a360-639ad850cebd" />
+<img width="3754" height="464" alt="image" src="https://github.com/user-attachments/assets/6a2ea793-cd6a-4091-aa60-e13949c63a9f" />
 <img width="1223" height="173" alt="image" src="https://github.com/user-attachments/assets/ca49b3fa-af5f-4944-815e-1a8f81d4439c" />
 
 # 已知的问题
-性能会随着时间和请求数量逐渐退化，并且只要被杀掉woker重启，就会一直退化。推测是内存碎片化的原因，但实际原因仍然没有验证。
+性能会随着时间和请求数量逐渐退化，并且只要被杀掉woker重启，就会一直退化。由于内存占用正常，应该没有泄露，推测是内存碎片化的原因，但实际原因仍然没有验证。
 
 
 ## 总结
