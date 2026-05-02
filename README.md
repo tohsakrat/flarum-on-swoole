@@ -190,7 +190,7 @@ return [
 两种模式都可以无缓存长时间维持（一个小时以上）rps15+cpu100%不被打崩（对于flarum这种重cpu应用来说这已经很不容易了），并且内存占用非常少。
 
 ## 压测
-关掉全部缓存机制，完整鉴权和序列化的纯动态请求。主机是gb5单核450分的netlab洋垃圾主机。
+关掉全部缓存机制，完整鉴权和序列化的纯动态请求。主机是虽Platinum 8272CL但gb5单核450分的netlab洋垃圾主机。
 ### woker模式
 <img width="3687" height="444" alt="image" src="https://github.com/user-attachments/assets/26064f92-8089-4888-8dd4-7cd3f05000e8" />
 <img width="3644" height="472" alt="image" src="https://github.com/user-attachments/assets/8d583bcf-c6f9-4625-bbab-a453fb5cac59" />
