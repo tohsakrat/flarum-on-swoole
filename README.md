@@ -10,7 +10,7 @@ flarum的非侵入式swoole容器，做了以下几件事：
 
 # 版本要求
 自用php8.5+swoole6.2+flarum1.8.x。
-如果用开启协程版本，要1.8以上，Tobscure\JsonApi已经内置于flarum/core的。
+如果用开启协程版本，要1.8以上，Tobscure\JsonApi已经内置于flarum\core的。
 flarum1.x运行环境历史悠久，运行环境多种多样，我也没在别的版本测试过，我只能保证在我的环境能用，实测肯定需要调试，还请自己测试。
 
 
