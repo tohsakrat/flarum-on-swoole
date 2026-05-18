@@ -27,7 +27,7 @@ pecl install swoole
 3. 启动
 
 ```
-php flarum-swoole-woker.php start
+php flarum-swoole-woker-co.php start
 ```
 
 - 如果成功，swoole会运行在并监听/tmp/flarum.sock(可以根据需要改成端口通信)，然后在nginx等网关配置反代即可。
@@ -38,8 +38,8 @@ php flarum-swoole-woker.php start
 #!/bin/bash
 
 # 1. 无差别强杀残留进程和 Socket 占用
-pkill -9 -f 'flarum-swoole-co.php' 2>/dev/null
-pkill -9 -f 'flarum-swoole-woker.php' 2>/dev/null
+pkill -9 -f 'flarum-swoole-worker-co.php' 2>/dev/null
+pkill -9 -f 'flarum-swoole-worker.php' 2>/dev/null
 fuser -k -9 /tmp/flarum.sock 2>/dev/null
 
 # 2. 超时检测循环 (最多等 5 秒)
@@ -55,7 +55,7 @@ done
 rm -f /tmp/flarum.sock /tmp/flarum-swoole.pid
 
 # 4. 切换用户并执行最终启动，xxx换成自己的脚本路径
-exec su -c 'cd /xxx/flarum && php flarum-swoole.php start'
+exec su -c 'cd /xxx/flarum && php flarum-swoole-worker-co.php start'
 ```
 
 # 缓存
